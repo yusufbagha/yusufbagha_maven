@@ -13,7 +13,7 @@ all_appointments = []
 # expects: epoch timestamp
 # returns: string
 def calendar_date(timestamp):
-  date = datetime.fromtimestamp(float(timestamp))
+  date = datetime.fromtimestamp(int(timestamp))
   return '{}/{}/{}'.format(date.month, date.day, date.year)
 
 
@@ -43,7 +43,7 @@ def appointment_exists(user_id, timestamp):
 def add_appointment(user_id, timestamp):
   return all_appointments.append({
     "user_id": user_id,
-    "timestamp": float(timestamp)
+    "timestamp": int(timestamp)
   })
 
 
@@ -68,9 +68,15 @@ def create_appointment():
     user_id = request.args["user_id"]
     timestamp = request.args["timestamp"]
 
-    # making sure fields are available
+    # checks if fields are available
     if not user_id or not timestamp:
       return 'Missing timestamp or user_id', 400
+
+    # checks if timestamp is a number
+    try:
+      int(timestamp)
+    except:
+      return 'Timestamp is not a number', 400 
 
     # checking if appointment already exists for date
     if appointment_exists(user_id, timestamp):
